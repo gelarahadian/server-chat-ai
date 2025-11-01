@@ -9,7 +9,7 @@ app.listen(port, async (err) => {
         port +
         " http://localhost:8080/"
     );
-    await connectDB();
+    // await connectDB();
   } else {
     console.error("Error Starting Server: " + err);
   }
