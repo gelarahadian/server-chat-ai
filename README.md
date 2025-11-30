@@ -7,6 +7,7 @@
  │   ├── 📁 middlewares     # Custom middleware (authentication, logging, error handling)  
  │   ├── 📁 services        # Business logic or external API interactions  
  │   ├── 📁 utils           # Helper functions and utilities  
+ |   ├── 📁 repositories      # Query Database 
  │   ├── app.js            # Express app setup  
  │   └── server.js         # Server initialization  
  ├── .env                  # Environment variables  

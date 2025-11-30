@@ -1,13 +1,11 @@
 import { Request, Response } from 'express';
 import {
-  createUser,
-  getUserByEmail,
   getUserById,
-} from "../services/userService";
-import { passwordHash, passwordVerify } from "../utils/helper";
-import { signToken } from "../utils/helper";
+  handleMeService,
+  handleSignInUser,
+  handleSignUpService,
+} from "../services/user.service";
 import { sanitizeUser } from "../utils/helper";
-import User from "../models/userModel";
 
 export const signUp = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -44,21 +42,22 @@ export const signUp = async (req: Request, res: Response) => {
       .json({ message: "Password must be less than 50 characters long" });
   }
 
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
-    return res.status(400).json({ message: "User already exists" });
+  try {
+    const user = await handleSignUpService(name, email, password);
+
+    res.status(201).json({ message: "User created successfully", user });
+  } catch (err: any) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({
+        message: err.message,
+      });
+    }
+    console.error("Error:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
   }
-
-  const hashedPassword = await passwordHash(password);
-
-  const user: InstanceType<typeof User> = await createUser({
-    name,
-    email,
-    password: hashedPassword,
-  });
-  res
-    .status(201)
-    .json({ message: "User created successfully", user: sanitizeUser(user) });
 };
 
 export const signIn = async (req: Request, res: Response) => {
@@ -86,37 +85,45 @@ export const signIn = async (req: Request, res: Response) => {
       .json({ message: "Password must be less than 50 characters long" });
   }
 
-  const user = await getUserByEmail(email);
+  try {
+    const { user, token } = await handleSignInUser(email, password);
 
-  if (!user) {
-    return res.status(400).json({ message: "User not found" });
+    res.status(200).json({
+      message: "User logged in successfully",
+      user,
+      token,
+    });
+  } catch (err: any) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({
+        message: err.message,
+      });
+    }
+    console.error("Error:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
   }
-  const isPasswordValid = await passwordVerify(password, user.password);
-
-  if (!isPasswordValid) {
-    return res.status(400).json({ message: "Invalid password" });
-  }
-  const token = signToken(String(user._id));
-  res.status(200).json({
-    message: "User logged in successfully",
-    user: sanitizeUser(user),
-    token,
-  });
 };
 
 export const me = async (req: Request, res: Response) => {
-  let user; // declare dulu di luar
-
-  if (req.userId) {
-    user = await getUserById(req.userId);
+  try {
+    const user = await handleMeService(req.userId);
+    return res.status(200).json({
+      message: "User authenticated successfully",
+      user: user,
+    });
+  } catch (err: any) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({
+        message: err.message,
+      });
+    }
+    console.error("Error:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
   }
-
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
-
-  return res.status(200).json({
-    message: "User authenticated successfully",
-    user: sanitizeUser(user),
-  });
 };
