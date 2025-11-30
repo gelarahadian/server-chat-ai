@@ -19,10 +19,15 @@ export const createChatController = async (req: Request, res: Response) => {
       chat: result,
     });
   } catch (err: any) {
-    console.error("Error:", err);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+     if (err.statusCode) {
+       return res.status(err.statusCode).json({
+         message: err.message,
+       });
+     }
+     console.error("Error:", err);
+     return res.status(500).json({
+       message: "Internal server error",
+       error: err.message,
+     });
   }
 };

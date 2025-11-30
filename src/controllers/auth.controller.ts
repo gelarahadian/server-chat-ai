@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import {
-  getUserById,
   handleMeService,
   handleSignInUser,
   handleSignUpService,

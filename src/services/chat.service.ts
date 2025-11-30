@@ -1,12 +1,25 @@
+import { BadRequestError } from "../errors/BadRequestError";
+import { FrobiddenError } from "../errors/ForbiddenError";
+import { NotFoundError } from "../errors/NotFoundError";
 import { askToAi, generateTitle } from "../integrations/openai";
 import { createChat } from "../repositories/chat.repository";
-import { createConversation, findConversationById } from "../repositories/conversation.repository";
+import {
+  createConversation,
+  findConversationById,
+} from "../repositories/conversation.repository";
 
 export const handleChatService = async (
   userId: string,
   input: string,
-  conversationId?: string,
+  conversationId?: string
 ) => {
+  let conversation;
+  if (conversationId) {
+    conversation = await findConversationById(conversationId);
+    if (!conversation) throw new NotFoundError("Conversation not found");
+    if (conversation.user_id.toString() !== userId)
+      throw new FrobiddenError("It's not your conversation");
+  }
   const responseAi = await askToAi(input);
   const chatUser = await createChat({
     role: "user",
@@ -18,19 +31,17 @@ export const handleChatService = async (
     content: responseAi.output_text,
   });
 
-  if (!conversationId) {
+  if (!conversation) {
     const title = await generateTitle(input);
-    const conversation = await createConversation({
+    await createConversation({
       user_id: userId,
       title,
       messages: [chatUser, chatAssistant],
     });
   } else {
-    const conversation = await findConversationById(conversationId);
-    if (!conversation) throw new Error("Conversation not found");
-    conversation.messages.push(chatUser._id, chatAssistant._id)
+    conversation.messages.push(chatUser._id, chatAssistant._id);
     await conversation.save();
   }
 
-  return chatAssistant
+  return chatAssistant;
 };

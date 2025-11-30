@@ -1,6 +1,11 @@
 import { BadRequestError } from "../errors/BadRequestError";
 import { NotFoundError } from "../errors/NotFoundError";
 import User from "../models/User";
+import {
+  createUser,
+  getUserByEmail,
+  getUserById,
+} from "../repositories/user.repository";
 import { passwordHash, passwordVerify, sanitizeUser, signToken } from "../utils/helper";
 
 export const handleSignUpService = async (name: string, email: string, password: string) => {
@@ -42,17 +47,3 @@ export const handleMeService = async (userId: string) => {
   return sanitizeUser(user)
 }
 
-export const createUser = async (user: any) => {
-  const newUser = await User.create(user);
-  return newUser;
-};
-
-export const getUserByEmail = async (email: string) => {
-  const user = await User.findOne({ email });
-  return user;
-};
-
-export const getUserById = async (id: string) => {
-  const user = await User.findById(id);
-  return user;
-};

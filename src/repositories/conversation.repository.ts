@@ -1,9 +1,11 @@
 import Conversation from "../models/Conversation";
 
-
+export const listConversation = async (userId: string) => {
+  return await Conversation.find({ user_id: userId }).sort({ created_at: -1 });
+};
 
 export const findConversationById = async (conversationId: string) => {
-  return await Conversation.findById(conversationId);
+  return await Conversation.findById(conversationId).populate("messages");
 };
 
 export const findConversationByUser = async (userId: string) => {
