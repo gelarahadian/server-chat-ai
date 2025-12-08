@@ -19,3 +19,7 @@ export const createConversation = async (data: any) => {
 export const saveConversation = async (conversation: any) => {
   return await conversation.save();
 };
+
+export const deleteConversationById = async (conversationId: string) => {
+  return await Conversation.findOneAndDelete({ _id: conversationId });
+};

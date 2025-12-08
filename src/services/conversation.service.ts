@@ -1,11 +1,30 @@
+import { FrobiddenError } from "../errors/ForbiddenError";
 import { NotFoundError } from "../errors/NotFoundError";
 import Conversation from "../models/Conversation";
-import { findConversationById } from "../repositories/conversation.repository";
+import {
+  deleteConversationById,
+  findConversationById,
+} from "../repositories/conversation.repository";
 
 export const handleFindConversationService = async (conversationId: string) => {
   const conversation = await findConversationById(conversationId);
 
-  if(!conversation) throw new NotFoundError("Conversation not found!");
+  if (!conversation) throw new NotFoundError("Conversation not found!");
 
-  return conversation
+  return conversation;
+};
+
+export const handleDeleteConversationService = async (
+  conversationId: string,
+  userId: string
+) => {
+  const conv = await findConversationById(conversationId);
+
+  if (!conv) throw new NotFoundError("Conversation not found!");
+
+  if (conv.user_id.toString() !== userId) {
+    throw new FrobiddenError("Forbidden: Not your conversation!");
+  }
+
+  return await deleteConversationById(conversationId);
 };
