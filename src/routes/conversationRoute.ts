@@ -15,7 +15,11 @@ router.get(
   authenticate,
   findConversatioinController
 );
-router.get("/conversations/search", authenticate, searchConversationController);
+router.post(
+  "/conversations/search",
+  authenticate,
+  searchConversationController
+);
 router.delete(
   "/conversation/:conversationId",
   authenticate,
