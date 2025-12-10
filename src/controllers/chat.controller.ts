@@ -16,7 +16,7 @@ export const createChatController = async (req: Request, res: Response) => {
 
     res.status(201).json({
       messages: "Chat Successfull",
-      chat: result,
+      conversation: result,
     });
   } catch (err: any) {
      if (err.statusCode) {

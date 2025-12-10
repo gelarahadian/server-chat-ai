@@ -33,7 +33,7 @@ export const handleChatService = async (
 
   if (!conversation) {
     const title = await generateTitle(input);
-    await createConversation({
+    conversation = await createConversation({
       user_id: userId,
       title,
       messages: [chatUser, chatAssistant],
@@ -43,5 +43,5 @@ export const handleChatService = async (
     await conversation.save();
   }
 
-  return chatAssistant;
+  return conversation;
 };
