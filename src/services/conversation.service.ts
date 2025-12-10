@@ -4,6 +4,7 @@ import Conversation from "../models/Conversation";
 import {
   deleteConversationById,
   findConversationById,
+  searchConversation,
 } from "../repositories/conversation.repository";
 
 export const handleFindConversationService = async (conversationId: string) => {
@@ -12,6 +13,13 @@ export const handleFindConversationService = async (conversationId: string) => {
   if (!conversation) throw new NotFoundError("Conversation not found!");
 
   return conversation;
+};
+
+export const handleSearchConversationService = async (
+  q: string,
+  userId: string
+) => {
+  return await searchConversation(q, userId);
 };
 
 export const handleDeleteConversationService = async (

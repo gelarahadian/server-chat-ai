@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Conversation from "../models/Conversation";
 
 export const listConversation = async (userId: string) => {
@@ -22,4 +23,34 @@ export const saveConversation = async (conversation: any) => {
 
 export const deleteConversationById = async (conversationId: string) => {
   return await Conversation.findOneAndDelete({ _id: conversationId });
+};
+
+export const searchConversation = async (q: string, userId: string) => {
+  return await Conversation.aggregate([
+    {
+      $match: {
+        user_id: new mongoose.Types.ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: "chats",
+        localField: "messages",
+        foreignField: "_id",
+        as: "messageObjects",
+      },
+    },
+    {
+      $match: {
+        $or: [
+          { user_id: userId },
+          { title: { $regex: q, $options: "i" } },
+          { "messageObjects.content": { $regex: q, $options: "i" } },
+        ],
+      },
+    },
+    {
+      $sort: { created_at: -1 },
+    },
+  ]);
 };

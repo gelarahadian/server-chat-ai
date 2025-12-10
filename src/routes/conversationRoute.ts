@@ -4,6 +4,7 @@ import {
   deleteConversationController,
   findConversatioinController,
   listConversationController,
+  searchConversationController,
 } from "../controllers/conversation.controller";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.get(
   authenticate,
   findConversatioinController
 );
+router.get("/conversations/search", authenticate, searchConversationController);
 router.delete(
   "/conversation/:conversationId",
   authenticate,
