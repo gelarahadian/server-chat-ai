@@ -61,6 +61,13 @@ export const searchConversation = async (q: string, userId: string) => {
       },
     },
     {
+      $addFields: {
+        assistantMessage: {
+          $arrayElemAt: ["$assistantMessages", 0],
+        },
+      },
+    },
+    {
       $sort: { created_at: -1 },
     },
     {
@@ -70,6 +77,10 @@ export const searchConversation = async (q: string, userId: string) => {
         __v: 0,
         messages: 0,
         messageObjects: 0,
+        assistantMessages: 0,
+        "assistantMessage._id": 0,
+        "assistantMessage.created_at": 0,
+        "assistantMessage.__v": 0,
       },
     },
   ]);
