@@ -50,7 +50,27 @@ export const searchConversation = async (q: string, userId: string) => {
       },
     },
     {
+      $addFields: {
+        assistantMessages: {
+          $filter: {
+            input: "$messageObjects",
+            as: "msg",
+            cond: { $eq: ["$$msg.role", "assistant"] },
+          },
+        },
+      },
+    },
+    {
       $sort: { created_at: -1 },
+    },
+    {
+      $project: {
+        user_id: 0,
+        created_at: 0,
+        __v: 0,
+        messages: 0,
+        messageObjects: 0,
+      },
     },
   ]);
 };
