@@ -39,7 +39,7 @@ export const handleChatService = async (
       messages: [chatUser, chatAssistant],
     });
   } else {
-    conversation.messages.push(chatUser._id, chatAssistant._id);
+    conversation.messageIds.push(chatUser._id, chatAssistant._id);
     await conversation.save();
   }
 

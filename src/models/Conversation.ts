@@ -1,23 +1,23 @@
 import mongoose from "mongoose";
 
 const conversationSchema = new mongoose.Schema({
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: 'true'
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: "true",
+  },
+  title: String,
+  messageIds: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
     },
-    title: String,
-    messages: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Chat",
-        }
-    ],
-    created_at: {
-        type: Date,
-        default: Date.now
-    }
-})
+  ],
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 conversationSchema.pre("findOneAndDelete", async function (next) {
   try {
