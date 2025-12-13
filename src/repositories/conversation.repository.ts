@@ -73,7 +73,6 @@ export const searchConversation = async (q: string, userId: string) => {
     {
       $project: {
         user_id: 0,
-        created_at: 0,
         __v: 0,
         messages: 0,
         messageObjects: 0,
