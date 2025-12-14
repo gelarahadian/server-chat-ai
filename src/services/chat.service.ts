@@ -7,6 +7,7 @@ import {
   createConversation,
   findConversationById,
 } from "../repositories/conversation.repository";
+import { normalizeCodeBlocks } from "../utils/helper";
 
 export const handleChatService = async (
   userId: string,
@@ -48,7 +49,7 @@ export const handleChatService = async (
 
   const chatAssistant = await createChat({
     role: "assistant",
-    content: responseAi.output_text,
+    content: normalizeCodeBlocks(responseAi.output_text),
   });
 
   if (!conversation) {
