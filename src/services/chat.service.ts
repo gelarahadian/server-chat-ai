@@ -23,12 +23,25 @@ export const handleChatService = async (
     }
   }
 
+  const MAX_HISTORY = 4;
+
+  const chat_history =
+    conversation?.messages.slice(-MAX_HISTORY).map((message: any) => {
+      return {
+        role: message.role,
+        content: message.content,
+      };
+    }) ?? [];
+
   const chatUser = await createChat({
     role: "user",
     content: input,
   });
 
-  const aiPromise = askToAi(input);
+  const aiPromise = askToAi([
+    ...chat_history,
+    { role: "user", content: input },
+  ]);
   const titlePromise = conversation ? null : generateTitle(input);
 
   const responseAi = await aiPromise;

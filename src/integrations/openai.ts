@@ -1,14 +1,19 @@
 import OpenAI from "openai";
 const client = new OpenAI();
 
-export const askToAi = async (message: string) => {
-    const response = await client.responses.create({
-      model: "gpt-5-nano",
-      input: message,
-    });
+type chat = {
+  role: "system" | "assistant" | "user";
+  content: string;
+};
 
-    return response
-}
+export const askToAi = async (message: chat[]) => {
+  const response = await client.responses.create({
+    model: "gpt-5-nano",
+    input: message,
+  });
+
+  return response;
+};
 
 export const generateTitle = async (message: string) => {
   const response = await client.chat.completions.create({
