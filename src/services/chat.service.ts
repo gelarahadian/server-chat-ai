@@ -14,17 +14,24 @@ export const handleChatService = async (
   conversationId?: string
 ) => {
   let conversation;
+
   if (conversationId) {
     conversation = await findConversationById(conversationId);
     if (!conversation) throw new NotFoundError("Conversation not found");
-    if (conversation.user_id.toString() !== userId)
+    if (conversation.user_id.toString() !== userId) {
       throw new FrobiddenError("It's not your conversation");
+    }
   }
-  const responseAi = await askToAi(input);
+
   const chatUser = await createChat({
     role: "user",
     content: input,
   });
+
+  const aiPromise = askToAi(input);
+  const titlePromise = conversation ? null : generateTitle(input);
+
+  const responseAi = await aiPromise;
 
   const chatAssistant = await createChat({
     role: "assistant",
@@ -32,11 +39,12 @@ export const handleChatService = async (
   });
 
   if (!conversation) {
-    const title = await generateTitle(input);
+    const title = titlePromise ? await titlePromise : "New Chat";
+
     conversation = await createConversation({
       user_id: userId,
       title,
-      messages: [chatUser, chatAssistant],
+      messages: [chatUser._id, chatAssistant._id],
     });
   } else {
     conversation.messages.push(chatUser._id, chatAssistant._id);
