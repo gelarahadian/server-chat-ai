@@ -24,36 +24,4 @@ function sanitizeUser(user: any) {
   return obj;
 }
 
-function normalizeCodeBlocks(text: string) {
-  // Deteksi kode python
-  const looksLikePython =
-    /def\s+\w+\(|if\s+__name__\s*==\s*["']__main__["']|print\(/i.test(text);
-
-  // Kalau ada potongan code tapi fence tidak konsisten
-  const hasFence = text.includes("```");
-
-  if (looksLikePython) {
-    // Ambil SEMUA baris yang kelihatan seperti code
-    const lines = text.split("\n");
-
-    const codeLines = lines.filter((l) =>
-      /^[ \t]*(def |if |for |while |try:|except|print\(|return|import |from )/.test(
-        l
-      )
-    );
-
-    if (codeLines.length) {
-      return ["```python", codeLines.join("\n"), "```"].join("\n");
-    }
-  }
-
-  return text;
-}
-
-export {
-  passwordHash,
-  passwordVerify,
-  signToken,
-  sanitizeUser,
-  normalizeCodeBlocks,
-};
+export { passwordHash, passwordVerify, signToken, sanitizeUser };

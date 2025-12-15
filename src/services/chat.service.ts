@@ -7,7 +7,6 @@ import {
   createConversation,
   findConversationById,
 } from "../repositories/conversation.repository";
-import { normalizeCodeBlocks } from "../utils/helper";
 
 export const handleChatService = async (
   userId: string,
@@ -40,6 +39,11 @@ export const handleChatService = async (
   });
 
   const aiPromise = askToAi([
+    {
+      role: "system",
+      content:
+        "Answer using Markdown, and wrap all code with triple backticks according to the language.",
+    },
     ...chat_history,
     { role: "user", content: input },
   ]);
@@ -49,7 +53,7 @@ export const handleChatService = async (
 
   const chatAssistant = await createChat({
     role: "assistant",
-    content: normalizeCodeBlocks(responseAi.output_text),
+    content: responseAi.output_text,
   });
 
   if (!conversation) {
