@@ -21,11 +21,13 @@ export const generateTitle = async (message: string) => {
     messages: [
       {
         role: "system",
-        content: "Create a short title (max 6 words) for this conversation.",
+        content:
+          "You are a title generator. Output ONLY a short title (max 6 words). No explanations. No punctuation. No markdown.",
       },
       { role: "user", content: message },
     ],
   });
+  console.log(response.choices);
 
   return response.choices[0].message.content;
 };
