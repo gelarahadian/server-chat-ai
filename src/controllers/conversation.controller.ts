@@ -4,7 +4,9 @@ import {
   handleDeleteConversationService,
   handleFindConversationService,
   handleSearchConversationService,
+  handleShareConversationService,
 } from "../services/conversation.service";
+import { frontendUrl } from "../config/config";
 
 export const listConversationController = async (
   req: Request,
@@ -101,6 +103,34 @@ export const deleteConversationController = async (
     res.status(200).json({
       message: "Conversation successfully deleted",
       conversation,
+    });
+  } catch (err: any) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({
+        message: err.message,
+      });
+    }
+    console.error("Error:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+
+export const shareConversationController = async (
+  req: Request,
+  res: Response
+) => {
+  const { conversationId } = req.params;
+  try {
+    const sharedConversation = await handleShareConversationService(
+      conversationId,
+      req.userId
+    );
+
+    res.status(201).json({
+      share_url: `${frontendUrl}/share/${sharedConversation.share_token}`,
     });
   } catch (err: any) {
     if (err.statusCode) {

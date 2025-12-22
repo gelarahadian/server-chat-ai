@@ -5,6 +5,7 @@ import {
   findConversatioinController,
   listConversationController,
   searchConversationController,
+  shareConversationController,
 } from "../controllers/conversation.controller";
 
 const router = express.Router();
@@ -26,4 +27,13 @@ router.delete(
   deleteConversationController
 );
 
+router.post(
+  "/conversation/:conversationId/share",
+  authenticate,
+  shareConversationController
+);
+
+router.post("/conv/:id/sh", (req, res) => {
+  res.send("yes");
+});
 export default router;
