@@ -39,11 +39,6 @@ export const handleChatService = async (
   });
 
   const aiPromise = askToAi([
-    {
-      role: "system",
-      content:
-        "Answer using Markdown, and wrap all code with triple backticks according to the language.",
-    },
     ...chat_history,
     { role: "user", content: input },
   ]);

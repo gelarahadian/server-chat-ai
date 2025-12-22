@@ -9,7 +9,14 @@ type chat = {
 export const askToAi = async (message: chat[]) => {
   const response = await client.responses.create({
     model: "gpt-5-nano",
-    input: message,
+    input: [
+      {
+        role: "system",
+        content:
+          "Answer using Markdown, and When writing code, you MUST use Markdown code blocks with triple backticks and specify the language.",
+      },
+      ...message,
+    ],
   });
 
   return response;
@@ -27,8 +34,17 @@ export const generateTitle = async (message: string) => {
       { role: "user", content: message },
     ],
   });
-  console.log(response.choices);
 
-  return response.choices[0].message.content;
+  const raw = response?.choices?.[0]?.message?.content ?? "";
+
+  const trimmed = raw.trim();
+
+  const words = trimmed.split(/\s+/).filter(Boolean);
+
+  const limited = words.length > 6 ? words.slice(0, 6).join(" ") : trimmed;
+
+  const cleaned = limited.replace(/[^\p{L}\p{N}\s]/gu, "");
+
+  return cleaned;
 };
 
