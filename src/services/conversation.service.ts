@@ -1,3 +1,4 @@
+import { BadRequestError } from "../errors/BadRequestError";
 import { FrobiddenError } from "../errors/ForbiddenError";
 import { NotFoundError } from "../errors/NotFoundError";
 import {
@@ -5,7 +6,10 @@ import {
   findConversationById,
   searchConversation,
 } from "../repositories/conversation.repository";
-import { createSharedConversation } from "../repositories/shared-conversation.repository";
+import {
+  createSharedConversation,
+  findSharedConversationByConversationId,
+} from "../repositories/shared-conversation.repository";
 import { nanoid } from "nanoid";
 
 export const handleFindConversationService = async (conversationId: string) => {
@@ -49,6 +53,12 @@ export const handleShareConversationService = async (
   if (conv.user_id.toString() !== userId) {
     throw new FrobiddenError("Forbidden: Not your conversation!");
   }
+
+  const sharedConv = await findSharedConversationByConversationId(
+    conversationId
+  );
+
+  if (sharedConv) return sharedConv;
 
   const share_token = nanoid(16);
 
