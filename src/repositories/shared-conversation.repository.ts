@@ -1,14 +1,33 @@
-import SharedConversation from "../models/SharedConversation"
+import mongoose from "mongoose";
+import SharedConversation from "../models/SharedConversation";
 
 export const findShareconversationByShareToken = async (shareToken: string) => {
-  return await SharedConversation.findOne({ share_token: shareToken }).populate(
+  return await SharedConversation.aggregate([
     {
-      path: "conversation_id",
-      populate: {
-        path: "messages",
+      $match: {
+        share_token: shareToken,
       },
-    }
-  );
+    },
+    {
+      $lookup: {
+        from: "conversations",
+        localField: "conversation_id",
+        foreignField: "_id",
+        as: "conversation",
+      },
+    },
+    {
+      $unwind: "$conversation",
+    },
+    {
+      $lookup: {
+        from: "chats",
+        localField: "conversation.messages",
+        foreignField: "_id",
+        as: "conversation.messages",
+      },
+    },
+  ]);
 };
 
 export const findSharedConversationByConversationId = async (
@@ -18,5 +37,5 @@ export const findSharedConversationByConversationId = async (
 };
 
 export const createSharedConversation = async (data: any) => {
-  return await SharedConversation.create(data)
-}
+  return await SharedConversation.create(data);
+};
