@@ -3,7 +3,7 @@ import { handleChatService } from "../services/chat.service";
 
 export const createChatController = async (req: Request, res: Response) => {
   try {
-    const { conversationId, input } = req.body;
+    const { conversationId, input, chatIds } = req.body;
 
     if (!input) {
       res.status(400).json({ message: "Input cannot be empty" });
@@ -12,7 +12,12 @@ export const createChatController = async (req: Request, res: Response) => {
     if (!req.userId) {
       res.status(401).json({ message: "User Not Authenticate" });
     }
-    const result = await handleChatService(req.userId, input, conversationId);
+    const result = await handleChatService(
+      req.userId,
+      input,
+      conversationId,
+      chatIds
+    );
 
     res.status(201).json({
       messages: "Chat Successfull",

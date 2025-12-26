@@ -22,7 +22,7 @@ export const askToAi = async (message: chat[]) => {
   return response;
 };
 
-export const generateTitle = async (message: string) => {
+export const generateTitle = async (messages: chat[]) => {
   const response = await client.chat.completions.create({
     model: "gpt-5-nano",
     messages: [
@@ -31,7 +31,7 @@ export const generateTitle = async (message: string) => {
         content:
           "You are a title generator. Output ONLY a short title (max 6 words). No explanations. No punctuation. No markdown.",
       },
-      { role: "user", content: message },
+      ...messages,
     ],
   });
 
