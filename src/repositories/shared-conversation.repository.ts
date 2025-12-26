@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import SharedConversation from "../models/SharedConversation";
 
 export const findShareconversationByShareToken = async (shareToken: string) => {
-  return await SharedConversation.aggregate([
+  const result = await SharedConversation.aggregate([
     {
       $match: {
         share_token: shareToken,
@@ -28,6 +28,8 @@ export const findShareconversationByShareToken = async (shareToken: string) => {
       },
     },
   ]);
+
+  return result[0] || null;
 };
 
 export const findSharedConversationByConversationId = async (
