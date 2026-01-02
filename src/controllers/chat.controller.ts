@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { handleChatService } from "../services/chat.service";
+import {
+  handleChatService,
+  handleChatServiceStream,
+} from "../services/chat.service";
+import { askToAiStream } from "../integrations/openai";
+import OpenAI from "openai";
 
 export const createChatController = async (req: Request, res: Response) => {
   try {
@@ -24,15 +29,32 @@ export const createChatController = async (req: Request, res: Response) => {
       conversation: result,
     });
   } catch (err: any) {
-     if (err.statusCode) {
-       return res.status(err.statusCode).json({
-         message: err.message,
-       });
-     }
-     console.error("Error:", err);
-     return res.status(500).json({
-       message: "Internal server error",
-       error: err.message,
-     });
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({
+        message: err.message,
+      });
+    }
+    console.error("Error:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
   }
+};
+
+export const createChatControllerStream = async (
+  req: Request,
+  res: Response
+) => {
+  const { input, conversationId, chatIds } = req.body;
+  const userId = req.userId;
+
+  await handleChatServiceStream(
+    req,
+    res,
+    userId,
+    input,
+    conversationId,
+    chatIds
+  );
 };

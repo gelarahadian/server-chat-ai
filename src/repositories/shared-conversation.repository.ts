@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import SharedConversation from "../models/SharedConversation";
 
 export const findShareconversationByShareToken = async (shareToken: string) => {

@@ -22,6 +22,20 @@ export const askToAi = async (message: chat[]) => {
   return response;
 };
 
+export const askToAiStream = async (messages: any[]) => {
+  return await client.responses.stream({
+    model: "gpt-4.1-mini",
+    input: [
+      {
+        role: "system",
+        content:
+          "Answer using Markdown, and When writing code, you MUST use Markdown code blocks with triple backticks and specify the language.",
+      },
+      ...messages,
+    ],
+  });
+};
+
 export const generateTitle = async (messages: chat[]) => {
   const response = await client.chat.completions.create({
     model: "gpt-5-nano",
