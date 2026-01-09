@@ -164,7 +164,10 @@ export const handleChatServiceStream = async (
       );
     }
 
-    const stream = await askToAiStream([{ role: "user", content: input }]);
+    const stream = await askToAiStream([
+      ...chat_history,
+      { role: "user", content: input },
+    ]);
 
     activeStreams.set(userId, stream);
 

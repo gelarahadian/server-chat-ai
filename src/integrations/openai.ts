@@ -38,7 +38,7 @@ export const askToAiStream = async (messages: any[]) => {
 
 export const generateTitle = async (messages: chat[]) => {
   const response = await client.chat.completions.create({
-    model: "gpt-5-nano",
+    model: "gpt-4.1-mini",
     messages: [
       {
         role: "system",
