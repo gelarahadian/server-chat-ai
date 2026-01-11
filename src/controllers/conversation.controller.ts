@@ -50,8 +50,8 @@ export const searchConversationController = async (
 ) => {
   const { q } = req.body;
 
-  if (!q || typeof q !== "string") {
-    throw new BadRequestError("Query is required");
+  if (typeof q !== "string") {
+    throw new BadRequestError("Query is not a string");
   }
 
   try {
