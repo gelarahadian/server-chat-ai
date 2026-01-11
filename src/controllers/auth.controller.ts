@@ -4,9 +4,13 @@ import {
   handleSignInUser,
   handleSignUpService,
 } from "../services/user.service";
-import { sanitizeUser } from "../utils/helper";
+import { NextFunction } from "express";
 
-export const signUp = async (req: Request, res: Response) => {
+export const signUp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -46,20 +50,15 @@ export const signUp = async (req: Request, res: Response) => {
 
     res.status(201).json({ message: "User created successfully", user });
   } catch (err: any) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({
-        message: err.message,
-      });
-    }
-    console.error("Error:", err);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    next(err);
   }
 };
 
-export const signIn = async (req: Request, res: Response) => {
+export const signIn = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -93,20 +92,11 @@ export const signIn = async (req: Request, res: Response) => {
       token,
     });
   } catch (err: any) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({
-        message: err.message,
-      });
-    }
-    console.error("Error:", err);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    next(err);
   }
 };
 
-export const me = async (req: Request, res: Response) => {
+export const me = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await handleMeService(req.userId);
     return res.status(200).json({
@@ -114,15 +104,6 @@ export const me = async (req: Request, res: Response) => {
       user: user,
     });
   } catch (err: any) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({
-        message: err.message,
-      });
-    }
-    console.error("Error:", err);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    next(err);
   }
 };

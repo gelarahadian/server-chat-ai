@@ -21,7 +21,7 @@ export const handleSignUpService = async (name: string, email: string, password:
     password: hashedPassword,
   });
 
-  return sanitizeUser(user)
+  return sanitizeUser(user as any);
 }
 
 export const handleSignInUser = async (email: string, password: string) => {

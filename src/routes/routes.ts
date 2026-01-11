@@ -1,6 +1,5 @@
 import { Router } from "express";
 import multer from "multer";
-
 import auth from "./authRoute";
 import chat from "./chatRoute";
 import conversation from "./conversationRoute";

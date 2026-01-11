@@ -3,10 +3,13 @@ import {
   handleChatService,
   handleChatServiceStream,
 } from "../services/chat.service";
-import { askToAiStream } from "../integrations/openai";
-import OpenAI from "openai";
+import { NextFunction } from "express";
 
-export const createChatController = async (req: Request, res: Response) => {
+export const createChatController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { conversationId, input, chatIds } = req.body;
 
@@ -29,25 +32,21 @@ export const createChatController = async (req: Request, res: Response) => {
       conversation: result,
     });
   } catch (err: any) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({
-        message: err.message,
-      });
-    }
-    console.error("Error:", err);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
+    next(err);
   }
 };
 
 export const createChatControllerStream = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const { input, conversationId, chatIds } = req.body;
   const userId = req.userId;
+
+  if (!input) {
+    res.status(400).json({ message: "Input cannot be empty" });
+  }
 
   await handleChatServiceStream(
     req,

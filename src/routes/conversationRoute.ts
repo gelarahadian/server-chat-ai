@@ -2,7 +2,7 @@ import express from "express";
 import authenticate from "../middlewares/authentication";
 import {
   deleteConversationController,
-  findConversatioinController,
+  findConversationController,
   listConversationController,
   searchConversationController,
   shareConversationController,
@@ -14,7 +14,7 @@ router.get("/conversations", authenticate, listConversationController);
 router.get(
   "/conversation/:conversationId",
   authenticate,
-  findConversatioinController
+  findConversationController
 );
 router.post(
   "/conversations/search",
