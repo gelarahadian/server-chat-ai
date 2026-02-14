@@ -203,7 +203,7 @@ export const handleChatServiceStream = async (
     if (err?.name !== "AbortError") {
       console.error("Streaming error:", err);
       res.write(
-        `data: ${JSON.stringify({ error: "AI generation failed" })}\n\n`
+        `data: ${JSON.stringify({ type: "error", message: err.message })}\n\n`,
       );
       res.end();
     }

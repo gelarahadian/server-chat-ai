@@ -17,8 +17,8 @@ app.use(
 );
 
 app.use(logger);
-app.use(errorHandler);
 app.use(routes);
+app.use(errorHandler);
 
 connectDB();
 
