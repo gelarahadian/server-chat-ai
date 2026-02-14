@@ -3,7 +3,6 @@
 
 # README – BACKEND (Express + TypeScript)
 
-```md
 # AI Chat App – Backend ⚙️
 
 Backend service for AI Chat Application.
@@ -217,8 +216,8 @@ npm install
 ```
 
 ### 3. Evnironment Variables
-```bash
 Create .env file in the root directory
+```bash
 PORT=
 MONGO_URI=
 OPENAI_API_KEY=
