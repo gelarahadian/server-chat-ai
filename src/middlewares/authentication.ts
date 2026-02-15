@@ -4,13 +4,14 @@ import { jwtSecret } from "../config/config";
 
 const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const authHeader = req.headers.authorization || ''
+        const token = req.cookies.token;
 
-        if(!authHeader || !authHeader.startsWith("Bearer")){
-            return res.status(401).json({message: 'Unauthorized: No token provided'})
+        if (!token) {
+          return res
+            .status(401)
+            .json({ message: "Unauthorized: No token provided" });
         }
         
-        const token = authHeader.split(' ')[1]
         const secret = jwtSecret
 
         if(!secret){

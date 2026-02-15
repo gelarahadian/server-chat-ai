@@ -4,16 +4,17 @@ import logger from "./middlewares/logger";
 import { errorHandler } from "./middlewares/errorHandler";
 import routes from "./routes/routes";
 import connectDB from "./config/db";
+import cookieParser from "cookie-parser";
 
 const app: express.Application = express();
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   cors({
-    origin: "*",
-    methods: "*",
-    allowedHeaders: "*",
-  })
+    origin: "https://chat-ai-lar.vercel.app",
+    credentials: true,
+  }),
 );
 
 app.use(logger);

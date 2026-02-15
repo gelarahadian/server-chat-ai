@@ -57,7 +57,7 @@ export const signUp = async (
 export const signIn = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { email, password } = req.body;
 
@@ -86,11 +86,28 @@ export const signIn = async (
   try {
     const { user, token } = await handleSignInUser(email, password);
 
-    res.status(200).json({
-      message: "User logged in successfully",
-      user,
-      token,
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24,
+      path: "/",
     });
+
+    return res.json({ message: "Login success" });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const signOut = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    res.clearCookie("token");
+    return res.json({ message: "Logout success" });
   } catch (err: any) {
     next(err);
   }
