@@ -89,9 +89,8 @@ export const signIn = async (
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
-      maxAge: 1000 * 60 * 60 * 24,
-      path: "/",
+      sameSite: "lax",
+      domain: ".chatai.my.id",
     });
 
     return res.json({ message: "Login success" });

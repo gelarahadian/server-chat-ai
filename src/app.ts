@@ -8,11 +8,21 @@ import cookieParser from "cookie-parser";
 
 const app: express.Application = express();
 
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .filter(Boolean);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://chat-ai-lar.vercel.app", "http://localhost:3000"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );

@@ -1,31 +1,28 @@
-import OpenAI from "openai";
-const client = new OpenAI();
+import Groq from "groq-sdk";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+export async function getGroqChatCompletion() {
+  return groq.chat.completions.create({
+    messages: [
+      {
+        role: "user",
+        content: "Explain the importance of fast language models",
+      },
+    ],
+    model: "openai/gpt-oss-20b",
+  });
+}
 
 type chat = {
   role: "system" | "assistant" | "user";
   content: string;
 };
 
-export const askToAi = async (message: chat[]) => {
-  const response = await client.responses.create({
-    model: "gpt-4.1",
-    input: [
-      {
-        role: "system",
-        content:
-          "Answer using Markdown, and When writing code, you MUST use Markdown code blocks with triple backticks and specify the language.",
-      },
-      ...message,
-    ],
-  });
-
-  return response;
-};
-
-export const askToAiStream = async (messages: any[]) => {
-  return await client.responses.stream({
-    model: "gpt-4.1",
-    input: [
+export const askToAiStream = async (messages: any[], signal?: AbortSignal) => {
+  return await groq.chat.completions.create({
+    model: "openai/gpt-oss-20b",
+    messages: [
       {
         role: "system",
         content:
@@ -33,12 +30,12 @@ export const askToAiStream = async (messages: any[]) => {
       },
       ...messages,
     ],
+    stream: true,
   });
 };
-
 export const generateTitle = async (messages: chat[]) => {
-  const response = await client.chat.completions.create({
-    model: "gpt-4.1",
+  const response = await groq.chat.completions.create({
+    model: "openai/gpt-oss-20b",
     messages: [
       {
         role: "system",
@@ -61,4 +58,3 @@ export const generateTitle = async (messages: chat[]) => {
 
   return cleaned;
 };
-

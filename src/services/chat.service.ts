@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
-import { BadRequestError } from "../errors/BadRequestError";
 import { FrobiddenError } from "../errors/ForbiddenError";
 import { NotFoundError } from "../errors/NotFoundError";
-import { askToAi, askToAiStream, generateTitle } from "../integrations/openai";
+import { askToAiStream, generateTitle } from "../integrations/groq";
 import { createChat, findChatByIds } from "../repositories/chat.repository";
 import {
   createConversation,
   findConversationById,
 } from "../repositories/conversation.repository";
+import { askToAi } from "../integrations/openai";
 
 export const handleChatService = async (
   userId: string,
   input: string,
   conversationId?: string,
-  chatIds?: string[]
+  chatIds?: string[],
 ) => {
   let conversation;
 
@@ -85,7 +85,7 @@ export const handleChatServiceStream = async (
   userId: string,
   input: string,
   conversationId?: string,
-  chatIds?: string[]
+  chatIds?: string[],
 ) => {
   const prevStream = activeStreams.get(userId);
   if (prevStream) {
@@ -151,7 +151,7 @@ export const handleChatServiceStream = async (
           type: "meta",
           conversationId: conversation._id,
           title,
-        })}\n\n`
+        })}\n\n`,
       );
     } else {
       conversation.messages.push(chatUser._id);
@@ -160,7 +160,7 @@ export const handleChatServiceStream = async (
         `data: ${JSON.stringify({
           type: "meta",
           conversationId: conversation._id,
-        })}\n\n`
+        })}\n\n`,
       );
     }
 
@@ -173,19 +173,22 @@ export const handleChatServiceStream = async (
 
     //  client close
     req.on("close", () => {
-      stream.abort();
+      // stream.abort();
       activeStreams.delete(userId);
     });
 
     for await (const event of stream) {
-      if (event.type === "response.output_text.delta") {
-        fullText += event.delta;
+      if (
+        event.choices[0].finish_reason === null &&
+        event.choices[0].delta.content
+      ) {
+        fullText += event.choices[0].delta.content;
         res.write(
-          `data: ${JSON.stringify({ type: "token", token: event.delta })}\n\n`
+          `data: ${JSON.stringify({ type: "token", token: event.choices[0].delta.content })}\n\n`,
         );
       }
 
-      if (event.type === "response.completed") {
+      if (event.choices[0].finish_reason === "stop") {
         const chatAssistant = await createChat({
           role: "assistant",
           content: fullText,
