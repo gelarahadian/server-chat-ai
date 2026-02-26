@@ -105,7 +105,13 @@ export const signOut = async (
   next: NextFunction,
 ) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      domain: process.env.COOKIE_DOMAIN || undefined,
+      path: "/",
+    });
     return res.json({ message: "Logout success" });
   } catch (err: any) {
     next(err);
